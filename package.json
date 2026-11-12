@@ -1,0 +1,18 @@
+{
+  "name": "boutique-order-management",
+  "version": "1.0.0",
+  "description": "Boutique Order Management Website for Mother and Tailor",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "boutique",
+    "tailor",
+    "orders",
+    "single-page-app"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

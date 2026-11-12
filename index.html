@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sandhya Boutique — Order & Tailoring Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap"
+    rel="stylesheet">
+  <!-- Firebase SDK for optional cloud shared DB sync -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    :root {
+      --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-display: 'Playfair Display', Georgia, serif;
+
+      /* Vibrant Boutique Festive Palette (Rani Pink, Royal Violet, Marigold, Peacock Teal) */
+      --bg-color: #fff2f6;
+      --bg-gradient: radial-gradient(at 5% 5%, #ffe4ee 0px, transparent 50%),
+        radial-gradient(at 95% 8%, #f3e8ff 0px, transparent 50%),
+        radial-gradient(at 90% 90%, #ffedd5 0px, transparent 50%),
+        radial-gradient(at 10% 95%, #e0f2fe 0px, transparent 50%),
+        #fff4f7;
+
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: #fbcfe8;
+      --card-hover-border: #f472b6;
+      --text-main: #301322;
+      --text-muted: #794a64;
+      --text-subtle: #a67c94;
+
+      /* Colorful Accents */
+      --pink-primary: #ec4899;
+      --pink-gradient: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #d946ef 100%);
+      --violet-gradient: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      --gold-gradient: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+      --teal-gradient: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+      --rainbow-border: linear-gradient(90deg, #f43f5e, #ec4899, #a855f7, #06b6d4, #f59e0b);
+
+      --accent: #ec4899;
+      --accent-soft: #fdf2f8;
+      --accent-glow: rgba(236, 72, 153, 0.28);
+
+      --input-bg: #ffffff;
+      --input-border: #f9a8d4;
+      --input-focus: #ec4899;
+
+      --danger: #e11d48;
+      --danger-gradient: linear-gradient(135deg, #ff1d53 0%, #be123c 100%);
+      --danger-soft: #ffe4e6;
+      --danger-border: #fda4af;
+
+      --success: #059669;
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --success-soft: #ecfdf5;
+
+      --overdue-badge-bg: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+      --overdue-badge-text: #9f1239;
+      --overdue-border: #f43f5e;
+
+      --radius-xs: 8px;
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+      --radius-full: 9999px;
+
+      --shadow-xs: 0 2px 6px rgba(219, 39, 119, 0.06);
+      --shadow-sm: 0 4px 16px rgba(219, 39, 119, 0.1);
+      --shadow-md: 0 10px 30px rgba(219, 39, 119, 0.14);
+      --shadow-lg: 0 18px 46px rgba(219, 39, 119, 0.18);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #120914;
+      --bg-gradient: radial-gradient(at 5% 5%, #2a0e24 0px, transparent 50%),
+        radial-gradient(at 95% 8%, #1f0f35 0px, transparent 50%),
+        radial-gradient(at 90% 90%, #281610 0px, transparent 50%),
+        radial-gradient(at 10% 95%, #081d29 0px, transparent 50%),
+        #120914;
+
+      --card-bg: rgba(28, 17, 30, 0.94);
+      --card-border: #4d2341;
+      --card-hover-border: #862e6e;
+      --text-main: #fef5f9;
+      --text-muted: #d4a9c4;
+      --text-subtle: #8a647d;
+
+      --accent: #f472b6;
+      --accent-soft: #2e1526;
+      --accent-glow: rgba(244, 114, 182, 0.35);
+
+      --input-bg: #221424;
+      --input-border: #56274a;
+      --input-focus: #f472b6;
+
+      --danger: #fb7185;
+      --danger-gradient: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+      --danger-soft: #3f121d;
+      --danger-border: #6d1b2d;
+
+      --success: #34d399;
+      --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --success-soft: #0d281a;
+
+      --overdue-badge-bg: linear-gradient(135deg, #4c111e 0%, #681628 100%);
+      --overdue-badge-text: #fecdd3;
+      --overdue-border: #9f1239;
+
+      --shadow-xs: 0 2px 6px rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
+      --shadow-md: 0 12px 34px rgba(0, 0, 0, 0.75);
+      --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-color);
+      background-image: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 16px 64px;
+      transition: background 0.3s ease, color 0.3s ease;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ====================================================
+       AUTHENTIC BLOUSE & EMBROIDERY PATTERN BACKGROUND
+       Features illustrated blouse necklines, sleeves, latkan tassels,
+       hangers, measuring tape, and delicate floral embroidery motifs!
+       ==================================================== */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.085;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cg fill='none' stroke='%23e11d48' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- Blouse Front Sweetheart Neck Silhouette --%3E%3Cpath d='M20,38 C28,26 44,22 58,32 C65,22 80,26 88,38 L88,58 C78,62 70,68 62,76 C54,68 46,62 36,58 L20,38 Z' stroke-dasharray='3 2'/%3E%3C!-- Potli Buttons on Placket --%3E%3Ccircle cx='54' cy='44' r='2' fill='%23e11d48'/%3E%3Ccircle cx='54' cy='52' r='2' fill='%23e11d48'/%3E%3Ccircle cx='54' cy='60' r='2' fill='%23e11d48'/%3E%3C!-- Blouse Back with Hanging Latkan Tassels --%3E%3Cpath d='M110,32 C118,24 130,22 142,28 C148,34 148,46 142,52 C134,60 126,60 118,52 C112,46 112,34 118,28 Z'/%3E%3Cpath d='M130,52 Q125,72 120,85'/%3E%3Cpath d='M130,52 Q135,74 140,86'/%3E%3Cpolygon points='118,85 122,85 120,92' fill='%23e11d48'/%3E%3Cpolygon points='138,86 142,86 140,93' fill='%23e11d48'/%3E%3C!-- Sewing Scissors Motif --%3E%3Ccircle cx='35' cy='130' r='6'/%3E%3Ccircle cx='47' cy='130' r='6'/%3E%3Cpath d='M39,125 L55,100 M43,125 L27,100'/%3E%3C!-- Measuring Tape Ribbon --%3E%3Cpath d='M95,120 Q120,105 145,125 T175,120' stroke-width='2' stroke-dasharray='1 3'/%3E%3C!-- Maggam / Aari Floral Embroidery --%3E%3Ccircle cx='95' cy='75' r='4' fill='%23e11d48'/%3E%3Cpath d='M95,65 Q98,71 95,75 Q92,71 95,65 Z' fill='%23e11d48'/%3E%3Cpath d='M95,85 Q98,79 95,75 Q92,79 95,85 Z' fill='%23e11d48'/%3E%3Cpath d='M85,75 Q91,72 95,75 Q91,78 85,75 Z' fill='%23e11d48'/%3E%3Cpath d='M105,75 Q99,72 95,75 Q99,78 105,75 Z' fill='%23e11d48'/%3E%3C!-- Sleeve Border Lace Motif --%3E%3Cpath d='M10,165 Q18,155 26,165 Q34,155 42,165 Q50,155 58,165'/%3E%3C/g%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px 180px;
+    }
+
+    [data-theme="dark"] body::before {
+      opacity: 0.12;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Vibrant Rainbow Ribbon Banner */
+    .rainbow-ribbon {
+      height: 4px;
+      width: 100%;
+      border-radius: var(--radius-full);
+      background: var(--rainbow-border);
+      box-shadow: 0 2px 8px var(--accent-glow);
+      margin-bottom: 2px;
+    }
+
+    /* Header */
+    header.app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 4px;
+    }
+
+    .header-branding {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-md);
+      background: var(--pink-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 26px;
+      box-shadow: 0 6px 18px var(--accent-glow);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .header-titles h1 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.15;
+      background: linear-gradient(135deg, #be123c, #ec4899, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    [data-theme="dark"] .header-titles h1 {
+      background: linear-gradient(135deg, #f472b6, #fb7185, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-titles p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      box-shadow: var(--shadow-xs);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .icon-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Tab Bar with Colorful Segments */
+    .tab-bar-container {
+      position: sticky;
+      top: 10px;
+      z-index: 80;
+    }
+
+    .tab-bar {
+      display: flex;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid var(--card-border);
+      padding: 6px;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-md);
+      gap: 6px;
+    }
+
+    [data-theme="dark"] .tab-bar {
+      background: rgba(28, 17, 30, 0.92);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 48px;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--text-main);
+      background: var(--accent-soft);
+    }
+
+    .tab-btn.active {
+      background: var(--pink-gradient);
+      color: #ffffff;
+      box-shadow: 0 4px 18px var(--accent-glow);
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gold-gradient);
+      color: #ffffff;
+      border-radius: var(--radius-full);
+      padding: 2px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      min-width: 24px;
+      height: 22px;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+
+    .tab-btn.active .tab-badge {
+      background: #ffffff;
+      color: #e11d48;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Content Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: tabFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes tabFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Boutique Card Container */
+    .card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--rainbow-border);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--card-border);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .form-label .required {
+      color: var(--danger);
+      font-weight: 800;
+      margin-left: 3px;
+    }
+
+    .form-control {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-md);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .form-control:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    textarea.form-control {
+      min-height: 88px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .two-col-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Colorful Measurements Panel */
+    .measurements-panel {
+      background: linear-gradient(135deg, rgba(254, 242, 242, 0.9) 0%, rgba(253, 242, 248, 0.9) 50%, rgba(245, 243, 255, 0.9) 100%);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    [data-theme="dark"] .measurements-panel {
+      background: linear-gradient(135deg, rgba(38, 18, 30, 0.9) 0%, rgba(28, 17, 34, 0.9) 100%);
+    }
+
+    .measurements-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .measurements-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .measurements-unit-pill {
+      font-size: 11px;
+      font-weight: 800;
+      background: var(--pink-gradient);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    .measurements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+      gap: 10px;
+    }
+
+    .measurement-box {
+      background: var(--card-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-sm);
+      padding: 7px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .measurement-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .measurement-box label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .measurement-box input {
+      min-height: 34px;
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      color: var(--text-main);
+      outline: none;
+      text-align: center;
+    }
+
+    /* Photo Upload Area */
+    .upload-zone {
+      border: 2px dashed var(--input-border);
+      background: linear-gradient(135deg, rgba(255, 245, 248, 0.8), rgba(243, 232, 255, 0.8));
+      border-radius: var(--radius-md);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    [data-theme="dark"] .upload-zone {
+      background: linear-gradient(135deg, rgba(42, 18, 36, 0.8), rgba(30, 16, 42, 0.8));
+    }
+
+    .upload-zone:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+    }
+
+    .upload-prompt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .upload-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-full);
+      background: var(--pink-gradient);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 6px 18px var(--accent-glow);
+    }
+
+    .upload-text {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Photo Preview Section */
+    .preview-wrapper {
+      margin-top: 14px;
+      display: none;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--card-border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preview-thumb-container {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .preview-thumb {
+      width: 86px;
+      height: 86px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #000;
+      border: 2px solid var(--card-border);
+      display: block;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease;
+    }
+
+    .preview-thumb-container:hover .preview-thumb {
+      transform: scale(1.05);
+    }
+
+    .preview-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .preview-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preview-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .btn-remove-photo {
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      width: fit-content;
+      margin-top: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-remove-photo:hover {
+      background: var(--danger-gradient);
+      color: #fff;
+    }
+
+    /* Submit Order Button */
+    .btn-submit {
+      width: 100%;
+      min-height: 54px;
+      background: var(--pink-gradient);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 6px 22px var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 8px 28px var(--accent-glow);
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    /* Tailor Screen */
+    .tailor-header-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tailor-title-wrapper h2 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .tailor-title-wrapper p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Quick Metrics Bar */
+    .tailor-stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .stat-val.stat-pending-val {
+      color: #ec4899;
+    }
+
+    .stat-val.stat-overdue-val {
+      color: #e11d48;
+    }
+
+    .stat-val.stat-duesoon-val {
+      color: #f59e0b;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Search & Filter Bar */
+    .search-filter-box {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 8px 16px 8px 42px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-full);
+      outline: none;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    /* Order Cards */
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .order-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .order-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--pink-gradient);
+    }
+
+    .order-card.is-overdue::before {
+      background: var(--danger-gradient);
+    }
+
+    .order-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--card-hover-border);
+      transform: translateY(-1px);
+    }
+
+    .order-card.is-overdue {
+      border-color: var(--overdue-border);
+      background: linear-gradient(135deg, var(--card-bg) 75%, rgba(254, 226, 226, 0.4) 100%);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .order-serial-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .order-serial-badge {
+      background: var(--pink-gradient);
+      color: #ffffff;
+      padding: 4px 13px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    .order-customer-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    .badge-overdue {
+      background: var(--danger-gradient);
+      color: #ffffff;
+      border: 1px solid var(--overdue-border);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(225, 29, 72, 0.3);
+      animation: pulseAlert 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseAlert {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.02);
+        opacity: 0.88;
+      }
+    }
+
+    .order-dates-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: linear-gradient(135deg, rgba(254, 242, 248, 0.8), rgba(245, 243, 255, 0.8));
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      border: 1px solid var(--card-border);
+    }
+
+    [data-theme="dark"] .order-dates-bar {
+      background: linear-gradient(135deg, rgba(38, 18, 32, 0.8), rgba(28, 18, 38, 0.8));
+    }
+
+    .date-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .date-pill strong {
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    .date-pill.overdue-pill strong {
+      color: var(--danger);
+    }
+
+    /* Order Card Body */
+    .order-body {
+      display: flex;
+      gap: 18px;
+    }
+
+    @media (max-width: 520px) {
+      .order-body {
+        flex-direction: column;
+      }
+    }
+
+    .order-photo-wrapper {
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .order-photo-img {
+      width: 120px;
+      height: 138px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--card-border);
+      display: block;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .order-photo-wrapper:hover .order-photo-img {
+      transform: scale(1.06);
+    }
+
+    .order-photo-zoom-hint {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+    }
+
+    .order-details-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .measurements-chips-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .measurements-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .measurement-chip {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .chip-name {
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .chip-val {
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .order-notes-box {
+      font-size: 13px;
+      color: var(--text-main);
+      background: var(--input-bg);
+      border-left: 3.5px solid var(--accent);
+      padding: 9px 12px;
+      border-radius: var(--radius-xs);
+      line-height: 1.45;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .order-notes-box strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    /* Card Footer & Delete Button */
+    .order-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px dashed var(--card-border);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .order-created-hint {
+      font-size: 11px;
+      color: var(--text-subtle);
+      font-weight: 600;
+    }
+
+    .btn-complete-delete {
+      background: var(--card-bg);
+      color: var(--danger);
+      border: 1.5px solid var(--danger-border);
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn-complete-delete:hover {
+      background: var(--danger-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-complete-delete:active {
+      transform: scale(0.96);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      background: var(--card-bg);
+      border: 2px dashed var(--card-border);
+      border-radius: var(--radius-lg);
+      margin: 20px 0;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 14px;
+      display: inline-block;
+      animation: floatArt 3.5s ease-in-out infinite;
+    }
+
+    @keyframes floatArt {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-8px) rotate(4deg);
+      }
+    }
+
+    .empty-state-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .empty-state-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 340px;
+      margin: 0 auto;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 12, 0.94);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .lightbox-modal.active {
+      display: flex;
+      animation: tabFadeIn 0.22s ease-out;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 94vw;
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 84vh;
+      object-fit: contain;
+      border-radius: var(--radius-md);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.95);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -18px;
+      right: -18px;
+      width: 46px;
+      height: 46px;
+      border-radius: var(--radius-full);
+      background: var(--pink-gradient);
+      color: #fff;
+      border: 2px solid #fff;
+      font-size: 26px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      transition: transform 0.2s ease;
+    }
+
+    .lightbox-close:hover {
+      transform: scale(1.1);
+    }
+
+    .lightbox-caption {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      margin-top: 14px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 6px 20px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Confirmation Modal */
+    .confirm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 12, 0.72);
+      z-index: 1500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .confirm-modal-overlay.active {
+      display: flex;
+      animation: tabFadeIn 0.2s ease-out;
+    }
+
+    .confirm-dialog {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 390px;
+      border: 2px solid var(--card-border);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .confirm-dialog-icon {
+      font-size: 46px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .confirm-dialog h3 {
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .confirm-dialog p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .confirm-actions button {
+      flex: 1;
+      min-height: 48px;
+      border-radius: var(--radius-full);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-cancel {
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+
+    .btn-cancel:hover {
+      background: var(--card-border);
+    }
+
+    .btn-confirm-delete {
+      background: var(--danger-gradient);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3);
+    }
+
+    .btn-confirm-delete:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Cloud Sync Modal */
+    .sync-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 7, 12, 0.72);
+      z-index: 1500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .sync-modal-overlay.active {
+      display: flex;
+      animation: tabFadeIn 0.2s ease-out;
+    }
+
+    .sync-dialog {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 26px 22px;
+      width: 100%;
+      max-width: 440px;
+      border: 2px solid var(--card-border);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sync-dialog h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .sync-dialog p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .sync-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1.5px solid var(--card-border);
+    }
+
+    .sync-status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 90%;
+      max-width: 420px;
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: 14px 22px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: var(--shadow-lg);
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .toast-success {
+      background: var(--text-main);
+      color: #ffffff;
+      border: 1.5px solid var(--accent);
+    }
+
+    .toast-error {
+      background: var(--danger-gradient);
+      color: #ffffff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-container">
+    <!-- Festive Rainbow Ribbon -->
+    <div class="rainbow-ribbon"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="brand-icon">👗</div>
+        <div class="header-titles">
+          <h1>Sandhya Boutique</h1>
+          <p>Order Management & Tailoring Studio</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Shared DB Status Button -->
+        <button id="btnOpenSync" class="icon-btn" title="Shared Database & Sync Status" aria-label="Database Status">
+          <span id="syncIndicatorDot"
+            style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span>
+          <span id="syncIndicatorText">Shared DB</span>
+        </button>
+        <!-- Theme Toggle -->
+        <button id="btnThemeToggle" class="icon-btn" title="Toggle Light / Dark Mode" aria-label="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-bar-container">
+      <nav class="tab-bar">
+        <button class="tab-btn active" id="tabBtnAdd" data-tab="tabAdd">
+          <span>✏️ Add Order</span>
+        </button>
+        <button class="tab-btn" id="tabBtnTailor" data-tab="tabTailor">
+          <span id="tabTailorTitleText">🪡 Tailor</span>
+          <span class="tab-badge" id="tailorBadge">0</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab 1: Add Order (Mother's Desk) -->
+    <main id="tabAdd" class="tab-pane active">
+      <div class="card">
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-title">✨ Create Boutique Order</h2>
+            <p class="card-subtitle">Fill in customer information, blouse measurements, and design photo</p>
+          </div>
+        </div>
+
+        <form id="orderForm" autocomplete="off">
+          <!-- Customer Name -->
+          <div class="form-group">
+            <label class="form-label" for="customerName">
+              <span>Customer Name <span class="required">*</span></span>
+            </label>
+            <input type="text" id="customerName" class="form-control" placeholder="e.g. Priya Sharma" required>
+          </div>
+
+          <!-- Body Measurements Studio (All 15 Exact Fields) -->
+          <div class="measurements-panel">
+            <div class="measurements-top-bar">
+              <span class="measurements-title">📐 Blouse Body Measurements</span>
+              <span class="measurements-unit-pill">Inches (")</span>
+            </div>
+            <div class="measurements-grid">
+              <div class="measurement-box">
+                <label for="m_length">Length</label>
+                <input type="text" id="m_length" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_neck">Neck</label>
+                <input type="text" id="m_neck" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_shoulder">Shoulder</label>
+                <input type="text" id="m_shoulder" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_upperChest">Upper chest</label>
+                <input type="text" id="m_upperChest" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_chest">Chest</label>
+                <input type="text" id="m_chest" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_waist">Waist</label>
+                <input type="text" id="m_waist" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_hipWaist">Hip waist</label>
+                <input type="text" id="m_hipWaist" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_frontLength">Front length</label>
+                <input type="text" id="m_frontLength" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_frontNeck">Front neck</label>
+                <input type="text" id="m_frontNeck" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_handLength">Hand length</label>
+                <input type="text" id="m_handLength" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_handLoose">Hand loose</label>
+                <input type="text" id="m_handLoose" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_underHarmone">Under harmone</label>
+                <input type="text" id="m_underHarmone" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_cuts">Cuts</label>
+                <input type="text" id="m_cuts" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_pant">Pant</label>
+                <input type="text" id="m_pant" placeholder="—" inputmode="decimal">
+              </div>
+              <div class="measurement-box">
+                <label for="m_scholar">Scholar</label>
+                <input type="text" id="m_scholar" placeholder="—" inputmode="decimal">
+              </div>
+            </div>
+          </div>
+
+          <!-- Design Photo Upload with ~640px JPEG optimization & FileReader -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>Blouse / Dress Design Photo</span>
+              <small style="color:var(--text-muted); font-weight:700;">Auto-resized to 640px JPEG</small>
+            </label>
+            <div class="upload-zone" id="uploadZone">
+              <input type="file" id="designPhotoInput" accept="image/*">
+              <div class="upload-prompt" id="uploadPrompt">
+                <div class="upload-icon-circle">📸</div>
+                <span class="upload-text">Tap to capture or choose blouse photo</span>
+                <span class="upload-sub">Compressed to ~640px JPEG for shared database sync</span>
+              </div>
+            </div>
+
+            <!-- Preview Thumbnail -->
+            <div class="preview-wrapper" id="previewWrapper">
+              <div class="preview-thumb-container">
+                <img id="photoPreviewImg" class="preview-thumb" alt="Preview" title="Click to view full">
+              </div>
+              <div class="preview-info">
+                <span class="preview-title">✓ Photo Attached</span>
+                <span class="preview-meta" id="previewDimensions">640px JPEG</span>
+                <button type="button" id="btnRemovePhoto" class="btn-remove-photo">Remove photo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates: Given Date (default today) & Delivery Date -->
+          <div class="two-col-grid form-group">
+            <div>
+              <label class="form-label" for="givenDate">
+                <span>Given Date <span class="required">*</span></span>
+              </label>
+              <input type="date" id="givenDate" class="form-control" required>
+            </div>
+            <div>
+              <label class="form-label" for="deliveryDate">
+                <span>Delivery Date <span class="required">*</span></span>
+              </label>
+              <input type="date" id="deliveryDate" class="form-control" required>
+            </div>
+          </div>
+
+          <!-- Optional Notes Box -->
+          <div class="form-group">
+            <label class="form-label" for="orderNotes">Optional Notes & Design Customization</label>
+            <textarea id="orderNotes" class="form-control"
+              placeholder="e.g. Potli buttons on back neck, magenta piping on sleeves, lining included..."></textarea>
+          </div>
+
+          <!-- Save Button -->
+          <button type="submit" id="btnSaveOrder" class="btn-submit">
+            <span>💾 Save Order</span>
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Tab 2: Tailor Tab -->
+    <section id="tabTailor" class="tab-pane">
+      <!-- Toolbar & Stats -->
+      <div class="tailor-header-panel">
+        <div class="tailor-title-wrapper">
+          <h2 id="tailorSectionHeading">🪡 Pending Tailoring Work</h2>
+          <p id="ordersCountText">Loading orders...</p>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Strip -->
+      <div class="tailor-stats-bar" id="tailorStatsBar">
+        <div class="stat-pill">
+          <div class="stat-val stat-pending-val" id="statPendingCount">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val stat-overdue-val" id="statOverdueCount">0</div>
+          <div class="stat-label">Overdue</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-val stat-duesoon-val" id="statDueTodayCount">0</div>
+          <div class="stat-label">Due Soon</div>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="search-filter-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchTailorInput" class="search-input"
+          placeholder="Search by customer name or order #...">
+      </div>
+
+      <!-- Order Cards List -->
+      <div id="ordersContainer" class="order-list">
+        <!-- Dynamically rendered -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Fullscreen Lightbox Modal -->
+  <div id="lightboxModal" class="lightbox-modal" role="dialog" aria-modal="true" aria-label="Photo Fullscreen View">
+    <div class="lightbox-content">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Close photo view">&times;</button>
+      <img id="lightboxImg" class="lightbox-img" src="" alt="Full Blouse Design">
+      <div id="lightboxCaption" class="lightbox-caption">Order Design Photo</div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="confirmModal" class="confirm-modal-overlay" role="dialog" aria-modal="true">
+    <div class="confirm-dialog">
+      <div class="confirm-dialog-icon">✂️</div>
+      <h3 id="confirmTitle">Complete & Delete Order?</h3>
+      <p id="confirmMessage">Are you sure this order has been completed? It will be removed from the pending list.</p>
+      <div class="confirm-actions">
+        <button id="btnCancelDelete" class="btn-cancel">Keep Order</button>
+        <button id="btnProceedDelete" class="btn-confirm-delete">Completed - Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared DB Settings Modal -->
+  <div id="syncModal" class="sync-modal-overlay" role="dialog" aria-modal="true">
+    <div class="sync-dialog">
+      <h3>☁️ Shared Database Settings</h3>
+      <p>Orders are automatically synchronized so an order added by Mother immediately appears on the Tailor's screen.
+      </p>
+
+      <div class="sync-status-pill">
+        <span class="sync-status-dot"></span>
+        <span id="syncModalStatusText">Shared DB Active</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cfgSyncRoom">Boutique Room / Store Name</label>
+        <input type="text" id="cfgSyncRoom" class="form-control" placeholder="e.g. sandhya_boutique">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="cfgFirebaseUrl">Optional Firebase Realtime DB URL</label>
+        <input type="url" id="cfgFirebaseUrl" class="form-control"
+          placeholder="https://your-boutique-default-rtdb.firebaseio.com">
+      </div>
+
+      <div class="confirm-actions" style="margin-top: 18px;">
+        <button id="btnCloseSyncModal" class="btn-cancel">Close</button>
+        <button id="btnSaveSyncConfig" class="btn-submit" style="margin-top:0; min-height:46px; font-size:15px;">Save
+          Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Application Logic -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ==========================================
+      // CONSTANTS & KEYS
+      // ==========================================
+      const STORAGE_ORDERS_KEY = 'boutique_orders_v1';
+      const STORAGE_COUNTER_KEY = 'boutique_serial_counter_v1';
+      const STORAGE_THEME_KEY = 'boutique_theme_v1';
+      const STORAGE_SYNC_KEY = 'boutique_sync_cfg_v1';
+      const SYNC_CHANNEL_NAME = 'boutique_broadcast_channel';
+
+      // All 15 Measurements exactly as specified
+      const MEASUREMENT_FIELDS = [
+        { id: 'm_length', label: 'Length' },
+        { id: 'm_neck', label: 'Neck' },
+        { id: 'm_shoulder', label: 'Shoulder' },
+        { id: 'm_upperChest', label: 'Upper chest' },
+        { id: 'm_chest', label: 'Chest' },
+        { id: 'm_waist', label: 'Waist' },
+        { id: 'm_hipWaist', label: 'Hip waist' },
+        { id: 'm_frontLength', label: 'Front length' },
+        { id: 'm_frontNeck', label: 'Front neck' },
+        { id: 'm_handLength', label: 'Hand length' },
+        { id: 'm_handLoose', label: 'Hand loose' },
+        { id: 'm_underHarmone', label: 'Under harmone' },
+        { id: 'm_cuts', label: 'Cuts' },
+        { id: 'm_pant', label: 'Pant' },
+        { id: 'm_scholar', label: 'Scholar' }
+      ];
+
+      // ==========================================
+      // STATE
+      // ==========================================
+      let orders = [];
+      let pendingDeleteId = null;
+      let currentResizedPhotoBase64 = null;
+      let broadcastChannel = null;
+      let firebaseDbInstance = null;
+      let backendServerAvailable = false;
+      let searchQuery = '';
+
+      // DOM Elements
+      const tabBtnAdd = document.getElementById('tabBtnAdd');
+      const tabBtnTailor = document.getElementById('tabBtnTailor');
+      const tabAdd = document.getElementById('tabAdd');
+      const tabTailor = document.getElementById('tabTailor');
+      const tailorBadge = document.getElementById('tailorBadge');
+      const ordersContainer = document.getElementById('ordersContainer');
+      const ordersCountText = document.getElementById('ordersCountText');
+      const tailorSectionHeading = document.getElementById('tailorSectionHeading');
+      const searchTailorInput = document.getElementById('searchTailorInput');
+
+      const statPendingCount = document.getElementById('statPendingCount');
+      const statOverdueCount = document.getElementById('statOverdueCount');
+      const statDueTodayCount = document.getElementById('statDueTodayCount');
+
+      const orderForm = document.getElementById('orderForm');
+      const customerNameInput = document.getElementById('customerName');
+      const givenDateInput = document.getElementById('givenDate');
+      const deliveryDateInput = document.getElementById('deliveryDate');
+      const orderNotesInput = document.getElementById('orderNotes');
+      const designPhotoInput = document.getElementById('designPhotoInput');
+      const previewWrapper = document.getElementById('previewWrapper');
+      const photoPreviewImg = document.getElementById('photoPreviewImg');
+      const previewDimensions = document.getElementById('previewDimensions');
+      const btnRemovePhoto = document.getElementById('btnRemovePhoto');
+      const uploadPrompt = document.getElementById('uploadPrompt');
+
+      const btnThemeToggle = document.getElementById('btnThemeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const toastContainer = document.getElementById('toastContainer');
+
+      const lightboxModal = document.getElementById('lightboxModal');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxCaption = document.getElementById('lightboxCaption');
+      const lightboxClose = document.getElementById('lightboxClose');
+
+      const confirmModal = document.getElementById('confirmModal');
+      const confirmMessage = document.getElementById('confirmMessage');
+      const btnCancelDelete = document.getElementById('btnCancelDelete');
+      const btnProceedDelete = document.getElementById('btnProceedDelete');
+
+      const btnOpenSync = document.getElementById('btnOpenSync');
+      const syncModal = document.getElementById('syncModal');
+      const btnCloseSyncModal = document.getElementById('btnCloseSyncModal');
+      const btnSaveSyncConfig = document.getElementById('btnSaveSyncConfig');
+      const cfgSyncRoom = document.getElementById('cfgSyncRoom');
+      const cfgFirebaseUrl = document.getElementById('cfgFirebaseUrl');
+      const syncIndicatorText = document.getElementById('syncIndicatorText');
+      const syncModalStatusText = document.getElementById('syncModalStatusText');
+
+      // ==========================================
+      // TOAST NOTIFICATIONS
+      // ==========================================
+      function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'toast-error' : 'toast-success'}`;
+        toast.innerHTML = `<span>${type === 'error' ? '⚠️' : '✨'}</span><span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+          toast.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(16px)';
+          setTimeout(() => toast.remove(), 280);
+        }, 3600);
+      }
+
+      // ==========================================
+      // SHARED DATABASE & COUNTER ENGINE
+      // ==========================================
+      function getNextLocalSerialNumber() {
+        const currentCounter = parseInt(localStorage.getItem(STORAGE_COUNTER_KEY) || '0', 10);
+        const nextSerial = currentCounter + 1;
+        localStorage.setItem(STORAGE_COUNTER_KEY, nextSerial.toString());
+        return nextSerial;
+      }
+
+      async function checkBackendServer() {
+        try {
+          const res = await fetch('/api/orders', { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success) {
+              backendServerAvailable = true;
+              syncIndicatorText.textContent = 'Server DB';
+              syncModalStatusText.textContent = 'Shared Node Server DB Connected';
+              return true;
+            }
+          }
+        } catch (e) { }
+        backendServerAvailable = false;
+        syncIndicatorText.textContent = 'Shared DB';
+        syncModalStatusText.textContent = 'Shared Real-time Storage Active';
+        return false;
+      }
+
+      async function fetchOrdersFromStorage() {
+        if (backendServerAvailable) {
+          try {
+            const res = await fetch('/api/orders', { cache: 'no-store' });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.success) {
+                orders = data.orders || [];
+                localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(orders));
+                if (data.counter) {
+                  localStorage.setItem(STORAGE_COUNTER_KEY, data.counter.toString());
+                }
+                return orders;
+              }
+            }
+          } catch (e) { }
+        }
+
+        try {
+          const raw = localStorage.getItem(STORAGE_ORDERS_KEY);
+          orders = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(orders)) orders = [];
+        } catch (e) {
+          orders = [];
+        }
+        return orders;
+      }
+
+      async function persistOrder(orderData) {
+        if (backendServerAvailable) {
+          try {
+            const res = await fetch('/api/orders', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(orderData)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.success) {
+                await fetchOrdersFromStorage();
+                notifySyncPeers({ type: 'SYNC_ORDERS', orders: orders });
+                return data.order;
+              }
+            }
+          } catch (e) { }
+        }
+
+        const serialNumber = getNextLocalSerialNumber();
+        const newOrder = {
+          ...orderData,
+          serialNumber: serialNumber,
+          createdAt: new Date().toISOString()
+        };
+
+        orders.push(newOrder);
+        localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(orders));
+        notifySyncPeers({ type: 'SYNC_ORDERS', orders: orders });
+        return newOrder;
+      }
+
+      async function removeOrder(orderId) {
+        if (backendServerAvailable) {
+          try {
+            const res = await fetch('/api/orders/' + encodeURIComponent(orderId), {
+              method: 'DELETE'
+            });
+            if (res.ok) {
+              await fetchOrdersFromStorage();
+              notifySyncPeers({ type: 'SYNC_ORDERS', orders: orders });
+              return true;
+            }
+          } catch (e) { }
+        }
+
+        orders = orders.filter(o => o.id !== orderId);
+        localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(orders));
+        notifySyncPeers({ type: 'SYNC_ORDERS', orders: orders });
+        return true;
+      }
+
+      function setupRealtimeSync() {
+        if ('BroadcastChannel' in window) {
+          try {
+            broadcastChannel = new BroadcastChannel(SYNC_CHANNEL_NAME);
+            broadcastChannel.onmessage = (event) => {
+              if (event.data && event.data.type === 'SYNC_ORDERS') {
+                orders = event.data.orders || [];
+                renderTailorOrders();
+              }
+            };
+          } catch (e) { }
+        }
+
+        window.addEventListener('storage', (event) => {
+          if (event.key === STORAGE_ORDERS_KEY) {
+            fetchOrdersFromStorage().then(() => renderTailorOrders());
+          }
+        });
+
+        setInterval(async () => {
+          if (backendServerAvailable) {
+            const prevIds = orders.map(o => o.id).join(',');
+            await fetchOrdersFromStorage();
+            const newIds = orders.map(o => o.id).join(',');
+            if (prevIds !== newIds) {
+              renderTailorOrders();
+            }
+          }
+        }, 3000);
+      }
+
+      function notifySyncPeers(message) {
+        if (broadcastChannel) {
+          try {
+            broadcastChannel.postMessage(message);
+          } catch (e) { }
+        }
+        if (firebaseDbInstance) {
+          syncToFirebase();
+        }
+      }
+
+      function initFirebaseIfConfigured() {
+        try {
+          const cfgRaw = localStorage.getItem(STORAGE_SYNC_KEY);
+          if (!cfgRaw) return;
+          const cfg = JSON.parse(cfgRaw);
+          if (cfg.firebaseUrl && window.firebase && window.firebase.initializeApp) {
+            const app = window.firebase.initializeApp({
+              databaseURL: cfg.firebaseUrl
+            }, 'boutiqueApp_' + Date.now());
+            firebaseDbInstance = app.database();
+            const room = cfg.room || 'sandhya_boutique';
+
+            firebaseDbInstance.ref('boutique/' + room).on('value', (snapshot) => {
+              const val = snapshot.val();
+              if (val) {
+                if (val.orders && Array.isArray(val.orders)) {
+                  orders = val.orders;
+                  localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(orders));
+                  renderTailorOrders();
+                }
+                if (val.counter) {
+                  const currentCounter = parseInt(localStorage.getItem(STORAGE_COUNTER_KEY) || '0', 10);
+                  if (val.counter > currentCounter) {
+                    localStorage.setItem(STORAGE_COUNTER_KEY, val.counter.toString());
+                  }
+                }
+              }
+            });
+          }
+        } catch (e) { }
+      }
+
+      function syncToFirebase() {
+        if (!firebaseDbInstance) return;
+        try {
+          const cfgRaw = localStorage.getItem(STORAGE_SYNC_KEY);
+          const cfg = cfgRaw ? JSON.parse(cfgRaw) : {};
+          const room = cfg.room || 'sandhya_boutique';
+          const counter = parseInt(localStorage.getItem(STORAGE_COUNTER_KEY) || '0', 10);
+          firebaseDbInstance.ref('boutique/' + room).set({
+            orders: orders,
+            counter: counter,
+            updatedAt: Date.now()
+          });
+        } catch (e) { }
+      }
+
+      // ==========================================
+      // THEME (LIGHT / DARK)
+      // ==========================================
+      function initTheme() {
+        const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+        if (savedTheme) {
+          setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          setTheme('dark');
+        } else {
+          setTheme('light');
+        }
+      }
+
+      function setTheme(theme) {
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          themeIcon.textContent = '☀️';
+          localStorage.setItem(STORAGE_THEME_KEY, 'dark');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+          themeIcon.textContent = '🌙';
+          localStorage.setItem(STORAGE_THEME_KEY, 'light');
+        }
+      }
+
+      btnThemeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setTheme(isDark ? 'light' : 'dark');
+      });
+
+      // ==========================================
+      // TAB NAVIGATION
+      // ==========================================
+      function switchTab(targetTabId) {
+        if (targetTabId === 'tabAdd') {
+          tabBtnAdd.classList.add('active');
+          tabBtnTailor.classList.remove('active');
+          tabAdd.classList.add('active');
+          tabTailor.classList.remove('active');
+        } else {
+          tabBtnTailor.classList.add('active');
+          tabBtnAdd.classList.remove('active');
+          tabTailor.classList.add('active');
+          tabAdd.classList.remove('active');
+          renderTailorOrders();
+        }
+      }
+
+      tabBtnAdd.addEventListener('click', () => switchTab('tabAdd'));
+      tabBtnTailor.addEventListener('click', () => switchTab('tabTailor'));
+
+      // ==========================================
+      // PHOTO UPLOAD WITH ~640px JPEG RESIZING
+      // ==========================================
+      designPhotoInput.addEventListener('change', handlePhotoSelect);
+
+      function handlePhotoSelect(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          showToast('Please select a valid image file.', 'error');
+          clearPhotoInput();
+          return;
+        }
+
+        // Use FileReader (not blob URLs)
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          const rawDataUrl = event.target.result;
+          if (!rawDataUrl || typeof rawDataUrl !== 'string') {
+            showToast('Unable to read this photo file.', 'error');
+            clearPhotoInput();
+            return;
+          }
+
+          const img = new Image();
+          img.onload = function () {
+            try {
+              const maxDim = 640;
+              let width = img.naturalWidth || img.width;
+              let height = img.naturalHeight || img.height;
+
+              if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                  height = Math.round((height * maxDim) / width);
+                  width = maxDim;
+                } else {
+                  width = Math.round((width * maxDim) / height);
+                  height = maxDim;
+                }
+              }
+
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+
+              const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+              currentResizedPhotoBase64 = resizedDataUrl;
+              photoPreviewImg.src = resizedDataUrl;
+              previewDimensions.textContent = `${width} × ${height} px JPEG`;
+              previewWrapper.style.display = 'flex';
+              uploadPrompt.style.display = 'none';
+
+            } catch (err) {
+              showToast('Could not process this image. Please select another.', 'error');
+              clearPhotoInput();
+            }
+          };
+
+          img.onerror = function () {
+            showToast('The photo file could not be decoded. Please try another image.', 'error');
+            clearPhotoInput();
+          };
+
+          img.src = rawDataUrl;
+        };
+
+        reader.onerror = function () {
+          showToast('Error reading the photo file.', 'error');
+          clearPhotoInput();
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function clearPhotoInput() {
+        designPhotoInput.value = '';
+        currentResizedPhotoBase64 = null;
+        photoPreviewImg.src = '';
+        previewWrapper.style.display = 'none';
+        uploadPrompt.style.display = 'flex';
+      }
+
+      btnRemovePhoto.addEventListener('click', (e) => {
+        e.stopPropagation();
+        clearPhotoInput();
+      });
+
+      photoPreviewImg.addEventListener('click', () => {
+        if (currentResizedPhotoBase64) {
+          openLightbox(currentResizedPhotoBase64, 'Design Photo Preview');
+        }
+      });
+
+      // ==========================================
+      // DEFAULT DATES
+      // ==========================================
+      function setDefaultDates() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        // Given date defaults to today
+        givenDateInput.value = todayStr;
+
+        // Delivery date is NOT set by default - owner selects it at the time of filling
+        deliveryDateInput.value = '';
+        deliveryDateInput.min = todayStr;
+      }
+
+      // ==========================================
+      // SAVE ORDER
+      // ==========================================
+      orderForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const customerName = customerNameInput.value.trim();
+        const givenDate = givenDateInput.value;
+        const deliveryDate = deliveryDateInput.value;
+        const notes = orderNotesInput.value.trim();
+
+        if (!customerName) {
+          showToast('Please enter the customer name.', 'error');
+          customerNameInput.focus();
+          return;
+        }
+
+        if (!givenDate || !deliveryDate) {
+          showToast('Please specify Given Date and Delivery Date.', 'error');
+          return;
+        }
+
+        const measurements = {};
+        MEASUREMENT_FIELDS.forEach(field => {
+          const inputEl = document.getElementById(field.id);
+          const val = inputEl ? inputEl.value.trim() : '';
+          if (val) {
+            measurements[field.label] = val;
+          }
+        });
+
+        const orderPayload = {
+          id: 'ord_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+          customerName: customerName,
+          givenDate: givenDate,
+          deliveryDate: deliveryDate,
+          notes: notes,
+          photo: currentResizedPhotoBase64,
+          measurements: measurements
+        };
+
+        const savedOrder = await persistOrder(orderPayload);
+
+        resetOrderForm();
+        showToast(`Order #${savedOrder.serialNumber} saved`, 'success');
+
+        renderTailorOrders();
+      });
+
+      function resetOrderForm() {
+        orderForm.reset();
+        clearPhotoInput();
+        setDefaultDates();
+        customerNameInput.focus();
+      }
+
+      // ==========================================
+      // TAILOR TAB RENDERING & SEARCH
+      // ==========================================
+      searchTailorInput.addEventListener('input', (e) => {
+        searchQuery = (e.target.value || '').trim().toLowerCase();
+        renderTailorOrders();
+      });
+
+      function isOrderOverdue(deliveryDateStr) {
+        if (!deliveryDateStr) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const parts = deliveryDateStr.split('-');
+        if (parts.length !== 3) return false;
+        const dDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        return dDate < today;
+      }
+
+      function isDueSoon(deliveryDateStr) {
+        if (!deliveryDateStr) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const parts = deliveryDateStr.split('-');
+        if (parts.length !== 3) return false;
+        const dDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        const diffDays = Math.ceil((dDate - today) / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 2;
+      }
+
+      function formatDisplayDate(dateStr) {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length !== 3) return dateStr;
+        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+
+      function renderTailorOrders() {
+        const totalCount = orders.length;
+
+        let overdueCount = 0;
+        let dueSoonCount = 0;
+        orders.forEach(o => {
+          if (isOrderOverdue(o.deliveryDate)) overdueCount++;
+          else if (isDueSoon(o.deliveryDate)) dueSoonCount++;
+        });
+
+        statPendingCount.textContent = totalCount;
+        statOverdueCount.textContent = overdueCount;
+        statDueTodayCount.textContent = dueSoonCount;
+
+        tailorBadge.textContent = totalCount;
+        if (totalCount === 0) {
+          tabBtnTailor.setAttribute('title', 'No pending blouses');
+          ordersCountText.textContent = 'No pending blouses';
+          tailorSectionHeading.textContent = '🪡 Pending Tailoring Work';
+          ordersContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">👗</div>
+              <h3 class="empty-state-title">No pending blouses</h3>
+              <p class="empty-state-sub">Everything is up to date! As soon as Mother creates an order, it will appear here instantly.</p>
+            </div>
+          `;
+          return;
+        }
+
+        tabBtnTailor.setAttribute('title', `${totalCount} pending blouses`);
+        ordersCountText.textContent = `${totalCount} ${totalCount === 1 ? 'order' : 'orders'} in queue`;
+        tailorSectionHeading.textContent = `🪡 Pending Tailoring Work (${totalCount})`;
+
+        let filteredOrders = [...orders].sort((a, b) => {
+          return (a.deliveryDate || '').localeCompare(b.deliveryDate || '');
+        });
+
+        if (searchQuery) {
+          filteredOrders = filteredOrders.filter(o => {
+            const matchName = (o.customerName || '').toLowerCase().includes(searchQuery);
+            const matchNum = String(o.serialNumber).includes(searchQuery);
+            return matchName || matchNum;
+          });
+        }
+
+        if (filteredOrders.length === 0) {
+          ordersContainer.innerHTML = `
+            <div class="empty-state" style="padding: 36px 16px;">
+              <div style="font-size: 38px; margin-bottom: 8px;">🔍</div>
+              <h3 class="empty-state-title">No matching orders</h3>
+              <p class="empty-state-sub">No pending order matches "${escapeHtml(searchQuery)}".</p>
+            </div>
+          `;
+          return;
+        }
+
+        ordersContainer.innerHTML = '';
+
+        filteredOrders.forEach(order => {
+          const overdue = isOrderOverdue(order.deliveryDate);
+          const card = document.createElement('article');
+          card.className = `order-card ${overdue ? 'is-overdue' : ''}`;
+          card.setAttribute('data-order-id', order.id);
+
+          const overdueHtml = overdue ? `<span class="badge-overdue">⚠️ Overdue</span>` : '';
+
+          let measurementsHtml = '';
+          const mKeys = order.measurements ? Object.keys(order.measurements) : [];
+          if (mKeys.length > 0) {
+            const chips = mKeys.map(k => `
+              <div class="measurement-chip">
+                <span class="chip-name">${escapeHtml(k)}:</span>
+                <span class="chip-val">${escapeHtml(order.measurements[k])}"</span>
+              </div>
+            `).join('');
+
+            measurementsHtml = `
+              <div>
+                <div class="measurements-chips-title">Measurements</div>
+                <div class="measurements-chips">${chips}</div>
+              </div>
+            `;
+          } else {
+            measurementsHtml = `
+              <div style="font-size:12px; color:var(--text-muted); font-style:italic;">No measurements entered</div>
+            `;
+          }
+
+          let photoHtml = '';
+          if (order.photo) {
+            photoHtml = `
+              <div class="order-photo-wrapper" data-action="zoom-photo" data-title="#${order.serialNumber} - ${escapeHtml(order.customerName)}">
+                <img class="order-photo-img" src="${order.photo}" alt="Blouse Design #${order.serialNumber}">
+                <span class="order-photo-zoom-hint">🔍 Tap to zoom</span>
+              </div>
+            `;
+          } else {
+            photoHtml = `
+              <div style="width:120px; height:138px; border-radius:var(--radius-md); background:linear-gradient(135deg, rgba(254, 242, 248, 0.9), rgba(243, 232, 255, 0.9)); border:1.5px dashed var(--card-border); display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-muted); font-size:12px; text-align:center; padding:10px;">
+                <span style="font-size:32px; margin-bottom:4px;">👗</span>
+                <span style="font-weight:700;">No photo</span>
+              </div>
+            `;
+          }
+
+          let notesHtml = '';
+          if (order.notes && order.notes.trim()) {
+            notesHtml = `
+              <div class="order-notes-box">
+                <strong>Notes / Instructions:</strong>
+                ${escapeHtml(order.notes)}
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="order-header">
+              <div class="order-serial-title">
+                <span class="order-serial-badge">#${order.serialNumber}</span>
+                <span class="order-customer-name">${escapeHtml(order.customerName)}</span>
+              </div>
+              ${overdueHtml}
+            </div>
+
+            <div class="order-dates-bar">
+              <div class="date-pill">
+                <span>🗓️ Given:</span>
+                <strong>${formatDisplayDate(order.givenDate)}</strong>
+              </div>
+              <div class="date-pill ${overdue ? 'overdue-pill' : ''}">
+                <span>⏳ Delivery:</span>
+                <strong>${formatDisplayDate(order.deliveryDate)}</strong>
+              </div>
+            </div>
+
+            <div class="order-body">
+              ${photoHtml}
+              <div class="order-details-pane">
+                ${measurementsHtml}
+                ${notesHtml}
+              </div>
+            </div>
+
+            <div class="order-footer">
+              <span class="order-created-hint">Order #${order.serialNumber}</span>
+              <button type="button" class="btn-complete-delete" data-action="delete-order" data-id="${order.id}" data-num="${order.serialNumber}" data-name="${escapeHtml(order.customerName)}">
+                <span>✓ Completed - Delete</span>
+              </button>
+            </div>
+          `;
+
+          ordersContainer.appendChild(card);
+        });
+
+        attachCardEventHandlers();
+      }
+
+      function attachCardEventHandlers() {
+        const photoTriggers = ordersContainer.querySelectorAll('[data-action="zoom-photo"]');
+        photoTriggers.forEach(el => {
+          el.addEventListener('click', () => {
+            const img = el.querySelector('img');
+            const title = el.getAttribute('data-title') || 'Blouse Design';
+            if (img && img.src) {
+              openLightbox(img.src, title);
+            }
+          });
+        });
+
+        const deleteButtons = ordersContainer.querySelectorAll('[data-action="delete-order"]');
+        deleteButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const orderId = btn.getAttribute('data-id');
+            const orderNum = btn.getAttribute('data-num');
+            const customerName = btn.getAttribute('data-name');
+            promptDeleteConfirmation(orderId, orderNum, customerName);
+          });
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // ==========================================
+      // LIGHTBOX MODAL
+      // ==========================================
+      function openLightbox(src, caption) {
+        lightboxImg.src = src;
+        lightboxCaption.textContent = caption;
+        lightboxModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        lightboxModal.classList.remove('active');
+        lightboxImg.src = '';
+        document.body.style.overflow = '';
+      }
+
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightboxModal.addEventListener('click', (e) => {
+        if (e.target === lightboxModal || e.target === lightboxClose) {
+          closeLightbox();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightboxModal.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+
+      // ==========================================
+      // CONFIRM DELETE MODAL
+      // ==========================================
+      function promptDeleteConfirmation(orderId, orderNum, customerName) {
+        pendingDeleteId = orderId;
+        confirmMessage.textContent = `Are you sure Order #${orderNum} for ${customerName} has been completed and should be deleted?`;
+        confirmModal.classList.add('active');
+      }
+
+      function closeConfirmModal() {
+        confirmModal.classList.remove('active');
+        pendingDeleteId = null;
+      }
+
+      btnCancelDelete.addEventListener('click', closeConfirmModal);
+
+      btnProceedDelete.addEventListener('click', async () => {
+        if (!pendingDeleteId) return;
+
+        const orderToDelete = orders.find(o => o.id === pendingDeleteId);
+        const orderNum = orderToDelete ? orderToDelete.serialNumber : '';
+
+        await removeOrder(pendingDeleteId);
+
+        closeConfirmModal();
+        renderTailorOrders();
+        showToast(`Order #${orderNum} completed and deleted`, 'success');
+      });
+
+      // ==========================================
+      // SYNC SETTINGS MODAL
+      // ==========================================
+      btnOpenSync.addEventListener('click', () => {
+        try {
+          const cfg = JSON.parse(localStorage.getItem(STORAGE_SYNC_KEY) || '{}');
+          cfgSyncRoom.value = cfg.room || 'sandhya_boutique';
+          cfgFirebaseUrl.value = cfg.firebaseUrl || '';
+        } catch (e) { }
+        syncModal.classList.add('active');
+      });
+
+      btnCloseSyncModal.addEventListener('click', () => {
+        syncModal.classList.remove('active');
+      });
+
+      btnSaveSyncConfig.addEventListener('click', () => {
+        const room = cfgSyncRoom.value.trim() || 'sandhya_boutique';
+        const firebaseUrl = cfgFirebaseUrl.value.trim();
+
+        const cfg = { room, firebaseUrl };
+        localStorage.setItem(STORAGE_SYNC_KEY, JSON.stringify(cfg));
+        syncModal.classList.remove('active');
+        showToast('Shared database settings saved!', 'success');
+
+        if (firebaseUrl) {
+          initFirebaseIfConfigured();
+        }
+      });
+
+      // ==========================================
+      // INITIALIZATION
+      // ==========================================
+      async function init() {
+        initTheme();
+        setDefaultDates();
+        await checkBackendServer();
+        await fetchOrdersFromStorage();
+        setupRealtimeSync();
+        initFirebaseIfConfigured();
+        renderTailorOrders();
+      }
+
+      init();
+
+    })();
+  </script>
+</body>
+
+</html>
